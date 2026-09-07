@@ -38,10 +38,13 @@ backend_Venation/uploads/*
 backend_Venation/trained_models/*
 !backend_Venation/trained_models/.gitkeep
 
+# 3. Keep the RESULTS folder structure visible but ignore its contents
+backend_Venation/results/*
+!backend_Venation/results/.gitkeep
+
 # Global safety blanket to block heavy model weights extensions
 *.pth
 *.h5
 *.pkl
 *.weights
 
-s
