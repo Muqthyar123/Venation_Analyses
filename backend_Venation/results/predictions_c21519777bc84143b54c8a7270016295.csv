@@ -1,0 +1,33 @@
+filename,predicted_class,confidence,modelName
+AG-S.jpg,Ficus Auriculata (Roxburgh fig),0.9508,resnet50
+AH-S.jpg,Piper Betle (Betel),0.938,resnet50
+AI-S.jpg,Ficus Auriculata (Roxburgh fig),0.8258,resnet50
+Architecture.png,Ficus Religiosa (Peepal Tree),0.9339,resnet50
+AV-S.jpg,Murraya Koenigii (Curry),0.8596,resnet50
+BA-S.jpg,Murraya Koenigii (Curry),0.8296,resnet50
+BJ-S-002.jpg,Murraya Koenigii (Curry),0.9186,resnet50
+CC-S-028.jpg,Murraya Koenigii (Curry),0.8406,resnet50
+CL-S.jpg,Moringa Oleifera (Drumstick),0.8474,resnet50
+FA-S.jpg,Azadirachta Indica (Neem),0.9033,resnet50
+FR-S.jpg,Plectranthus Amboinicus (Mexican Mint),0.8961,resnet50
+HR-S.jpg,Pongamia Pinnata (Indian Beech),0.9582,resnet50
+J-S.jpg,Hibiscus Rosa-sinensis (Hibiscus),0.936,resnet50
+MC-S.jpg,Brassica Juncea (Indian Mustard),0.8455,resnet50
+MI-S.jpg,Syzygium Cumini (Jamun),0.8206,resnet50
+MK-S.jpg,Trigonella Foenum-graecum (Fenugreek),0.9619,resnet50
+MO-S.jpg,Psidium Guajava (Guava),0.9563,resnet50
+M-S.jpg,Murraya Koenigii (Curry),0.8326,resnet50
+NA-S.jpg,Mentha (Mint),0.8533,resnet50
+NO-S.jpg,Basella Alba (Basale),0.9494,resnet50
+OT-S.jpg,Carissa Carandas (Karanda),0.8296,resnet50
+PA-S.jpg,Azadirachta Indica (Neem),0.9783,resnet50
+PB-S.jpg,Muntingia Calabura (Jamaica Cherry-Gasagase),0.8385,resnet50
+PG-S (2).jpg,Basella Alba (Basale),0.9604,resnet50
+PG-S.jpg,Nerium Oleander (Oleander),0.8397,resnet50
+PP-S.jpg,Piper Betle (Betel),0.821,resnet50
+SA-S.jpg,Moringa Oleifera (Drumstick),0.9664,resnet50
+SC-S.jpg,Hibiscus Rosa-sinensis (Hibiscus),0.936,resnet50
+SJ-S.jpg,Nerium Oleander (Oleander),0.9087,resnet50
+TD-S.jpg,Syzygium Cumini (Jamun),0.9626,resnet50
+TF-S.jpg,Moringa Oleifera (Drumstick),0.9684,resnet50
+Venation Architecture.png,Syzygium Cumini (Jamun),0.8546,resnet50

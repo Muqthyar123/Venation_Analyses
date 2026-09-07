@@ -1,0 +1,31 @@
+filename,predicted_class,confidence,modelName
+AG-S.jpg,Alpinia Galanga (Rasna),0.994976,hybridnet
+AH-S.jpg,Artocarpus Heterophyllus (Jackfruit),0.340352,hybridnet
+AI-S.jpg,Azadirachta Indica (Neem),0.971657,hybridnet
+AV-S.jpg,Amaranthus Viridis (Arive-Dantu),0.997661,hybridnet
+BA-S.jpg,Basella Alba (Basale),0.990926,hybridnet
+BJ-S-002.jpg,Brassica Juncea (Indian Mustard),0.851368,hybridnet
+CC-S-028.jpg,Carissa Carandas (Karanda),0.999076,hybridnet
+CL-S.jpg,Citrus Limon (Lemon),0.999782,hybridnet
+FA-S.jpg,Ficus Auriculata (Roxburgh fig),0.999739,hybridnet
+FR-S.jpg,Ficus Religiosa (Peepal Tree),0.827748,hybridnet
+HR-S.jpg,Hibiscus Rosa-sinensis (Hibiscus),0.994051,hybridnet
+J-S.jpg,Jasminum (Jasmine),0.980217,hybridnet
+MC-S.jpg,Muntingia Calabura (Jamaica Cherry-Gasagase),0.988097,hybridnet
+MI-S.jpg,Mangifera Indica (Mango),0.559789,hybridnet
+MK-S.jpg,Murraya Koenigii (Curry),0.998676,hybridnet
+MO-S.jpg,Moringa Oleifera (Drumstick),0.976002,hybridnet
+M-S.jpg,Mentha (Mint),0.999303,hybridnet
+NA-S.jpg,Nyctanthes Arbor-tristis (Parijata),0.999932,hybridnet
+NO-S.jpg,Nerium Oleander (Oleander),0.865047,hybridnet
+OT-S.jpg,Ocimum Tenuiflorum (Tulsi),0.746407,hybridnet
+PA-S.jpg,Plectranthus Amboinicus (Mexican Mint),0.655333,hybridnet
+PB-S.jpg,Piper Betle (Betel),0.998642,hybridnet
+PG-S (2).jpg,Psidium Guajava (Guava),0.999911,hybridnet
+PG-S.jpg,Syzygium Cumini (Jamun),0.592465,hybridnet
+PP-S.jpg,Murraya Koenigii (Curry),0.101443,hybridnet
+SA-S.jpg,Santalum Album (Sandalwood),0.697925,hybridnet
+SC-S.jpg,Syzygium Cumini (Jamun),0.979255,hybridnet
+SJ-S.jpg,Syzygium Jambos (Rose Apple),0.999725,hybridnet
+TD-S.jpg,Tabernaemontana Divaricata (Crape Jasmine),0.906223,hybridnet
+TF-S.jpg,Trigonella Foenum-graecum (Fenugreek),0.999936,hybridnet

@@ -1,0 +1,17 @@
+# Security & Secrets
+.env
+
+# Dependencies & Python Cache
+node_modules/
+__pycache__/
+*.pyc
+
+# Logs & Local User Uploads
+*.log
+backend_Venation/uploads/*
+!backend_Venation/uploads/.gitkeep
+
+# Ignore every single machine learning model file
+*.pth
+*.h5
+backend_Venation/trained_models/

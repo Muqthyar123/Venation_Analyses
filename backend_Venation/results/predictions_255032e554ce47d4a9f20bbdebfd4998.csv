@@ -1,0 +1,33 @@
+filename,predicted_class,confidence,modelName
+AG-S.jpg,Ficus Religiosa (Peepal Tree),0.9719,hybridnet
+AH-S.jpg,Plectranthus Amboinicus (Mexican Mint),0.9591,hybridnet
+AI-S.jpg,Ficus Religiosa (Peepal Tree),0.8469,hybridnet
+Architecture.png,Hibiscus Rosa-sinensis (Hibiscus),0.955,hybridnet
+AV-S.jpg,Nerium Oleander (Oleander),0.8807,hybridnet
+BA-S.jpg,Nerium Oleander (Oleander),0.8507,hybridnet
+BJ-S-002.jpg,Nerium Oleander (Oleander),0.9397,hybridnet
+CC-S-028.jpg,Nerium Oleander (Oleander),0.8617,hybridnet
+CL-S.jpg,Muntingia Calabura (Jamaica Cherry-Gasagase),0.8685,hybridnet
+FA-S.jpg,Basella Alba (Basale),0.9244,hybridnet
+FR-S.jpg,Pongamia Pinnata (Indian Beech),0.9172,hybridnet
+HR-S.jpg,Psidium Guajava (Guava),0.9793,hybridnet
+J-S.jpg,Jasminum (Jasmine),0.9571,hybridnet
+MC-S.jpg,Carissa Carandas (Karanda),0.8666,hybridnet
+MI-S.jpg,Syzygium Jambos (Rose Apple),0.8417,hybridnet
+MK-S.jpg,Alpinia Galanga (Rasna),0.983,hybridnet
+MO-S.jpg,Punica Granatum (Pomegranate),0.9774,hybridnet
+M-S.jpg,Nerium Oleander (Oleander),0.8537,hybridnet
+NA-S.jpg,Moringa Oleifera (Drumstick),0.8744,hybridnet
+NO-S.jpg,Brassica Juncea (Indian Mustard),0.9705,hybridnet
+OT-S.jpg,Citrus Limon (Lemon),0.8507,hybridnet
+PA-S.jpg,Basella Alba (Basale),0.8294,hybridnet
+PB-S.jpg,Murraya Koenigii (Curry),0.8596,hybridnet
+PG-S (2).jpg,Brassica Juncea (Indian Mustard),0.9815,hybridnet
+PG-S.jpg,Nyctanthes Arbor-tristis (Parijata),0.8608,hybridnet
+PP-S.jpg,Plectranthus Amboinicus (Mexican Mint),0.8421,hybridnet
+SA-S.jpg,Muntingia Calabura (Jamaica Cherry-Gasagase),0.9875,hybridnet
+SC-S.jpg,Jasminum (Jasmine),0.9571,hybridnet
+SJ-S.jpg,Nyctanthes Arbor-tristis (Parijata),0.9298,hybridnet
+TD-S.jpg,Syzygium Jambos (Rose Apple),0.9837,hybridnet
+TF-S.jpg,Muntingia Calabura (Jamaica Cherry-Gasagase),0.9895,hybridnet
+Venation Architecture.png,Syzygium Jambos (Rose Apple),0.8757,hybridnet

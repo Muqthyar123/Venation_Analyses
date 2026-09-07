@@ -1,0 +1,23 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    env_file:
+      - ./backend/.env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/trained_models:/app/trained_models:ro
+      - ./backend/uploads:/app/uploads
+      - ./backend/results:/app/results
+      - ./frontend/src/images:/frontend/src/images:ro
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: http://localhost:8000
+    depends_on:
+      - backend
+    ports:
+      - "4173:4173"

@@ -1,0 +1,33 @@
+filename,predicted_class,confidence,modelName
+AG-S.jpg,Santalum Album (Sandalwood),0.8245,venationnet
+AH-S.jpg,Citrus Limon (Lemon),0.9817,venationnet
+AI-S.jpg,Santalum Album (Sandalwood),0.8695,venationnet
+Architecture.png,Syzygium Cumini (Jamun),0.9776,venationnet
+AV-S.jpg,Azadirachta Indica (Neem),0.9033,venationnet
+BA-S.jpg,Azadirachta Indica (Neem),0.8733,venationnet
+BJ-S-002.jpg,Azadirachta Indica (Neem),0.9623,venationnet
+CC-S-028.jpg,Azadirachta Indica (Neem),0.8843,venationnet
+CL-S.jpg,Amaranthus Viridis (Arive-Dantu),0.8911,venationnet
+FA-S.jpg,Piper Betle (Betel),0.947,venationnet
+FR-S.jpg,Ficus Auriculata (Roxburgh fig),0.9398,venationnet
+HR-S.jpg,Ficus Religiosa (Peepal Tree),0.8319,venationnet
+J-S.jpg,Syzygium Jambos (Rose Apple),0.9797,venationnet
+MC-S.jpg,Pongamia Pinnata (Indian Beech),0.8892,venationnet
+MI-S.jpg,Mentha (Mint),0.8643,venationnet
+MK-S.jpg,Murraya Koenigii (Curry),0.8356,venationnet
+MO-S.jpg,Hibiscus Rosa-sinensis (Hibiscus),0.83,venationnet
+M-S.jpg,Azadirachta Indica (Neem),0.8763,venationnet
+NA-S.jpg,Alpinia Galanga (Rasna),0.897,venationnet
+NO-S.jpg,Plectranthus Amboinicus (Mexican Mint),0.8231,venationnet
+OT-S.jpg,Psidium Guajava (Guava),0.8733,venationnet
+PA-S.jpg,Piper Betle (Betel),0.852,venationnet
+PB-S.jpg,Artocarpus Heterophyllus (Jackfruit),0.8822,venationnet
+PG-S (2).jpg,Plectranthus Amboinicus (Mexican Mint),0.8341,venationnet
+PG-S.jpg,Basella Alba (Basale),0.8834,venationnet
+PP-S.jpg,Citrus Limon (Lemon),0.8647,venationnet
+SA-S.jpg,Amaranthus Viridis (Arive-Dantu),0.8401,venationnet
+SC-S.jpg,Syzygium Jambos (Rose Apple),0.9797,venationnet
+SJ-S.jpg,Basella Alba (Basale),0.9524,venationnet
+TD-S.jpg,Mentha (Mint),0.8363,venationnet
+TF-S.jpg,Amaranthus Viridis (Arive-Dantu),0.8421,venationnet
+Venation Architecture.png,Mentha (Mint),0.8983,venationnet
