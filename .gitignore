@@ -1,3 +1,24 @@
+# # Security & Secrets
+# .env
+
+# # Dependencies & Python Cache
+# node_modules/
+# __pycache__/
+# *.pyc
+
+# # Logs & Local User Uploads
+# *.log
+# backend_Venation/uploads/*
+# !backend_Venation/uploads/.gitkeep
+
+# # Ignore every single machine learning model file
+# *.pth
+# *.h5
+# backend_Venation/trained_models/
+
+
+
+
 # Security & Secrets
 .env
 
@@ -6,12 +27,21 @@ node_modules/
 __pycache__/
 *.pyc
 
-# Logs & Local User Uploads
+# Logs
 *.log
+
+# 1. Keep the UPLOADS folder structure visible but ignore its contents
 backend_Venation/uploads/*
 !backend_Venation/uploads/.gitkeep
 
-# Ignore every single machine learning model file
+# 2. Keep the TRAINED_MODELS folder structure visible but ignore its contents
+backend_Venation/trained_models/*
+!backend_Venation/trained_models/.gitkeep
+
+# Global safety blanket to block heavy model weights extensions
 *.pth
 *.h5
-backend_Venation/trained_models/
+*.pkl
+*.weights
+
+s
