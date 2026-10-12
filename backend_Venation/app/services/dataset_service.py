@@ -47,6 +47,50 @@ def _first_image(directory: Path) -> Path | None:
     return None
 
 
+def _normalize_name(value: str) -> str:
+    return "".join(char.lower() for char in value if char.isalnum())
+
+
+def _plant_folder(plant: dict) -> Path | None:
+    settings = get_settings()
+    expected_names = {
+        display_name(plant),
+        plant["scientific_name"],
+        plant["common_name"],
+    }
+
+    for name in expected_names:
+        folder = settings.dataset_dir / name
+        if folder.exists() and folder.is_dir():
+            return folder
+
+    if not settings.dataset_dir.exists():
+        return None
+
+    scientific = _normalize_name(plant["scientific_name"])
+    common = _normalize_name(plant["common_name"])
+    for folder in sorted(path for path in settings.dataset_dir.iterdir() if path.is_dir()):
+        normalized = _normalize_name(folder.name)
+        if scientific in normalized or common in normalized:
+            return folder
+    return None
+
+
+def sample_image_path(plant: dict) -> Path | None:
+    settings = get_settings()
+    folder = _plant_folder(plant)
+    sample = _first_image(folder) if folder else None
+    if sample:
+        return sample
+
+    filename = SAMPLE_IMAGES_BY_SCIENTIFIC_NAME.get(plant["scientific_name"])
+    if not filename:
+        return None
+
+    path = settings.dataset_dir / filename
+    return path if path.exists() else None
+
+
 def _dataset_image_url(path: Path) -> str:
     settings = get_settings()
     relative = path.resolve().relative_to(settings.dataset_dir.resolve()).as_posix()
@@ -60,38 +104,26 @@ def _dataset_download_url(path: Path) -> str:
 
 
 def sample_image_url(scientific_name: str) -> str | None:
-    settings = get_settings()
-    filename = SAMPLE_IMAGES_BY_SCIENTIFIC_NAME.get(scientific_name)
-    if filename:
-        path = settings.dataset_dir / filename
-        if path.exists():
-            return _dataset_image_url(path)
+    for plant in load_plants():
+        if plant["scientific_name"] == scientific_name:
+            path = sample_image_path(plant)
+            return _dataset_image_url(path) if path else None
     return None
 
 
 def sample_image_download_url(scientific_name: str) -> str | None:
-    settings = get_settings()
-    filename = SAMPLE_IMAGES_BY_SCIENTIFIC_NAME.get(scientific_name)
-    if filename:
-        path = settings.dataset_dir / filename
-        if path.exists():
-            return _dataset_download_url(path)
+    for plant in load_plants():
+        if plant["scientific_name"] == scientific_name:
+            path = sample_image_path(plant)
+            return _dataset_download_url(path) if path else None
     return None
 
 
 def dataset_samples() -> list[dict]:
-    settings = get_settings()
     samples = []
     for index, plant in enumerate(load_plants(), start=1):
         folder_name = display_name(plant)
-        folder = settings.dataset_dir / folder_name
-        sample = _first_image(folder) if folder.exists() else None
-        image_path = sample
-        if not image_path:
-            filename = SAMPLE_IMAGES_BY_SCIENTIFIC_NAME.get(plant["scientific_name"])
-            image_path = settings.dataset_dir / filename if filename else None
-            if image_path and not image_path.exists():
-                image_path = None
+        image_path = sample_image_path(plant)
         url = _dataset_image_url(image_path) if image_path else sample_image_url(plant["scientific_name"])
         download_url = _dataset_download_url(image_path) if image_path else url
         samples.append(

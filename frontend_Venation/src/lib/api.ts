@@ -179,7 +179,7 @@ export async function predictSingle(file: File, modelName: ModelName = "hybridne
       modelName: data.model_name,
       modelLabel: data.model_label,
       modelBackend: data.model_backend,
-      modelLoadError: data.model_load_error,
+      modelLoadError: data.model_backend === "fallback" ? null : data.model_load_error,
     } satisfies PredictionResult;
   } catch (error) {
     if (error instanceof ApiError) throw error;
@@ -250,24 +250,26 @@ export async function getDataset(): Promise<PlantDetails[]> {
       plantSamples.map((p) => [p.scientificName.toLowerCase(), p]),
     );
 
-    return data.map((p) => ({
-      id: p.id,
-      name: p.name ?? p.common_name ?? p.plant_name,
-      scientificName: p.scientificName ?? p.scientific_name,
-      image:
-        assetUrl(p.image ?? p.image_path) ||
-        localSamplesByScientificName.get(
-          (p.scientificName ?? p.scientific_name ?? "").toLowerCase(),
-        )?.image ||
-        "",
-      downloadUrl: assetUrl(p.downloadUrl ?? p.download_url),
-      uses: Array.isArray(p.uses)
-        ? p.uses.join(", ")
-        : Array.isArray(p.medicinal_uses)
-          ? p.medicinal_uses.join(", ")
-          : (p.uses ?? ""),
-      description: p.description ?? "",
-    }));
+    return data.map((p) => {
+      const localSample = localSamplesByScientificName.get(
+        (p.scientificName ?? p.scientific_name ?? "").toLowerCase(),
+      );
+      const image = assetUrl(p.image ?? p.image_path) || localSample?.image || "";
+
+      return {
+        id: p.id,
+        name: p.name ?? p.common_name ?? p.plant_name,
+        scientificName: p.scientificName ?? p.scientific_name,
+        image,
+        downloadUrl: assetUrl(p.downloadUrl ?? p.download_url) || image,
+        uses: Array.isArray(p.uses)
+          ? p.uses.join(", ")
+          : Array.isArray(p.medicinal_uses)
+            ? p.medicinal_uses.join(", ")
+            : (p.uses ?? ""),
+        description: p.description ?? "",
+      };
+    });
   } catch (error) {
     console.warn("Backend dataset unavailable, using mock samples.", error);
     return plantSamples;
@@ -281,11 +283,13 @@ export async function getPlantDetails(name: string): Promise<PlantDetails> {
   if (!res.ok) throw new ApiError(await readError(res), res.status);
   const data = await res.json();
 
+  const image = assetUrl(data.image ?? data.image_path);
+
   return {
     name: data.name ?? data.common_name,
     scientificName: data.scientificName ?? data.scientific_name,
-    image: assetUrl(data.image ?? data.image_path),
-    downloadUrl: assetUrl(data.downloadUrl ?? data.download_url),
+    image,
+    downloadUrl: assetUrl(data.downloadUrl ?? data.download_url) || image,
     uses: Array.isArray(data.uses)
       ? data.uses.join(", ")
       : Array.isArray(data.medicinal_uses)

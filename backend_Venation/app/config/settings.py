@@ -15,7 +15,12 @@ class Settings(BaseSettings):
     upload_dir: Path = Path(__file__).resolve().parents[2] / "uploads"
     results_dir: Path = Path(__file__).resolve().parents[2] / "results"
     static_dir: Path = Path(__file__).resolve().parents[1] / "static"
-    dataset_dir: Path = Path(__file__).resolve().parents[3] / "frontend" / "src" / "images"
+    dataset_dir: Path = (
+        Path(__file__).resolve().parents[2]
+        / "app"
+        / "dataset"
+        / "Segmented Medicinal Leaf Images"
+    )
     model_dir: Path = Path(__file__).resolve().parents[2] / "trained_models"
     model_path: str | None = None
     default_model_name: str = "hybridnet"

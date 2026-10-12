@@ -1,7 +1,8 @@
 import { BASE_URL, type PlantDetails } from "./api";
 
 const TRANSFER_KEY = "venaleaf:selectedPredictionImage";
-const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png"]);
+const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/jpg", "image/pjpeg", "image/png"]);
+const ALLOWED_IMAGE_EXTENSIONS = /\.(jpe?g|png)(?:$|[?#])/i;
 
 export interface PredictionImageTransfer {
   imageUrl: string;
@@ -34,6 +35,10 @@ export async function downloadImage(url: string, filename?: string) {
   if (!response.ok) throw new Error("Image download failed.");
 
   const blob = await response.blob();
+  if (!isSupportedImageBlob(blob, resolvedUrl, filename)) {
+    throw new Error("Selected dataset file is not a supported JPG or PNG image.");
+  }
+
   const objectUrl = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
   anchor.href = objectUrl;
@@ -48,8 +53,8 @@ export function storePredictionImage(plant: PlantDetails) {
   if (!plant.image) throw new Error("Image URL is unavailable.");
   const payload: PredictionImageTransfer = {
     imageUrl: plant.image,
-    fetchUrl: plant.downloadUrl ?? plant.image,
-    filename: filenameFromUrl(plant.image, `${plant.name}.jpg`),
+    fetchUrl: plant.downloadUrl || plant.image,
+    filename: filenameFromUrl(plant.downloadUrl || plant.image, `${plant.name}.jpg`),
     name: plant.name,
     scientificName: plant.scientificName,
   };
@@ -72,13 +77,25 @@ export function clearPredictionImageTransfer() {
 }
 
 export async function transferToFile(transfer: PredictionImageTransfer) {
-  const response = await fetch(apiUrl(transfer.fetchUrl ?? transfer.imageUrl));
+  const sourceUrl = transfer.fetchUrl || transfer.imageUrl;
+  const resolvedUrl = apiUrl(sourceUrl);
+  if (!resolvedUrl) throw new Error("Image URL is unavailable.");
+
+  const response = await fetch(resolvedUrl);
   if (!response.ok) throw new Error("Could not load selected dataset image.");
 
   const blob = await response.blob();
-  if (!ALLOWED_IMAGE_TYPES.has(blob.type)) {
+  if (!isSupportedImageBlob(blob, resolvedUrl, transfer.filename)) {
     throw new Error("Selected dataset file is not a supported JPG or PNG image.");
   }
 
   return new File([blob], transfer.filename, { type: blob.type || "image/jpeg" });
+}
+
+function isSupportedImageBlob(blob: Blob, url: string, filename?: string) {
+  return (
+    ALLOWED_IMAGE_TYPES.has(blob.type.toLowerCase()) ||
+    ALLOWED_IMAGE_EXTENSIONS.test(filename ?? "") ||
+    ALLOWED_IMAGE_EXTENSIONS.test(url)
+  );
 }
