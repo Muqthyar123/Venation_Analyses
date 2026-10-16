@@ -50,13 +50,17 @@ AVAILABLE_MODELS: dict[str, ModelSpec] = {
 }
 
 
+class ModelUnavailableError(RuntimeError):
+    """Raised when the selected trained model cannot be used for inference."""
+
+
 class LoadedModel:
     def __init__(self, spec: ModelSpec) -> None:
         self.settings = get_settings()
         self.spec = spec
         self.path = self.settings.model_dir / spec.filename
         self.model: Any | None = None
-        self.backend = "fallback"
+        self.backend = "unavailable"
         self.load_error: str | None = None
         self._load_model()
 
@@ -101,36 +105,37 @@ class LoadedModel:
             return False
 
     def _load_tensorflow(self) -> None:
-        try:
-            from tensorflow.keras.models import load_model
-
-            self.model = load_model(self.path)
-            self.backend = "tensorflow"
-        except Exception as exc:
-            self.model = None
-            self.backend = "fallback"
-            self.load_error = (
-                f"{self.path.name} could not be loaded as a complete Keras model. "
-                "If it is weights-only, provide the matching architecture before loading weights."
-            )
-            if str(exc):
-                self.load_error = f"{self.load_error} Details: {exc}"
+        # These .weights.h5 artifacts do not include a Keras model config.
+        # Without the exact training architecture, loading weights into a guessed
+        # network could produce convincing but incorrect class scores.
+        self.load_error = (
+            f"{self.path.name} contains weights only. Its matching Keras "
+            "architecture is not present in this project."
+        )
 
     def _load_pytorch(self) -> None:
         try:
             import torch
 
-            loaded = torch.load(self.path, map_location="cpu")
+            loaded = torch.load(self.path, map_location="cpu", weights_only=True)
             if isinstance(loaded, dict):
-                loaded = loaded.get("state_dict", loaded)
+                for state_key in ("state_dict", "model_state_dict", "model"):
+                    candidate = loaded.get(state_key)
+                    if isinstance(candidate, dict):
+                        loaded = candidate
+                        break
                 if self.spec.key == "hybridnet":
                     from app.services.hybrid_model import HybridNetMSVD
 
                     self.model = HybridNetMSVD(num_classes=len(class_names()))
+                    # Checkpoints saved by DataParallel prefix parameters with
+                    # "module.". Normalize that common prefix before strict load.
+                    if loaded and all(key.startswith("module.") for key in loaded):
+                        loaded = {key.removeprefix("module."): value for key, value in loaded.items()}
                     self.model.load_state_dict(loaded)
                 else:
                     self.model = None
-                    self.backend = "fallback"
+                    self.backend = "unavailable"
                     self.load_error = (
                         f"{self.path.name} appears to be a PyTorch state_dict/checkpoint. "
                         "Provide the matching model class before loading this checkpoint."
@@ -144,7 +149,7 @@ class LoadedModel:
             self.backend = "pytorch"
         except Exception as exc:
             self.model = None
-            self.backend = "fallback"
+            self.backend = "unavailable"
             self.load_error = f"{self.path.name} could not be loaded by PyTorch. Details: {exc}"
 
 
@@ -202,24 +207,23 @@ class ModelService:
         exp = np.exp(values - np.max(values))
         return exp / np.sum(exp)
 
-    def _fallback_predict(self, tensor: np.ndarray, model_key: str) -> tuple[str, float]:
-        channel_means = tensor.mean(axis=(0, 1))
-        model_offset = sum(ord(char) for char in model_key)
-        score_seed = int(float(channel_means.sum()) * 10000) + model_offset
-        label_index = score_seed % len(self.classes)
-        confidence = 0.82 + ((score_seed % 1700) / 10000)
-        return self.classes[label_index], min(confidence, 0.99)
-
     def predict(self, tensor: np.ndarray, model_name: str | None = None) -> tuple[str, float, dict]:
         loaded = self.get_loaded_model(model_name)
         if loaded.model is None:
-            predicted_class, confidence = self._fallback_predict(tensor, loaded.spec.key)
-            return predicted_class, confidence, self._metadata(loaded)
+            detail = loaded.load_error or f"{loaded.spec.label} is not available."
+            raise ModelUnavailableError(
+                f"Cannot predict with {loaded.spec.label}: {detail}"
+            )
 
         if loaded.backend == "tensorflow":
             batch = np.expand_dims(tensor[:, :, : loaded.spec.channels], axis=0)
             raw = loaded.model.predict(batch, verbose=0)[0]
-            probabilities = self._softmax(np.asarray(raw))
+            probabilities = np.asarray(raw, dtype=np.float64).reshape(-1)
+            if not np.all(np.isfinite(probabilities)):
+                raise ModelUnavailableError(f"{loaded.spec.label} returned invalid scores.")
+            # Keras classifiers may return either logits or probabilities.
+            if np.any(probabilities < 0) or not np.isclose(probabilities.sum(), 1.0, atol=1e-3):
+                probabilities = self._softmax(probabilities)
         elif loaded.backend == "pytorch":
             import torch
 
@@ -227,12 +231,14 @@ class ModelService:
             with torch.no_grad():
                 raw = loaded.model(torch.tensor(batch, dtype=torch.float32).unsqueeze(0))
                 probabilities = torch.nn.functional.softmax(raw, dim=1).cpu().numpy()[0]
-        else:
-            predicted_class, confidence = self._fallback_predict(tensor, loaded.spec.key)
-            return predicted_class, confidence, self._metadata(loaded)
+
+        if probabilities.size != len(self.classes):
+            raise ModelUnavailableError(
+                f"{loaded.spec.label} returned {probabilities.size} scores, but the "
+                f"configured class list contains {len(self.classes)} species."
+            )
 
         label_index = int(np.argmax(probabilities))
-        label_index = label_index if label_index < len(self.classes) else label_index % len(self.classes)
         return self.classes[label_index], float(probabilities[label_index]), self._metadata(loaded)
 
     @staticmethod

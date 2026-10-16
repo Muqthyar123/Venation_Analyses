@@ -1,3 +1,5 @@
+# Install with Python 3.11 or 3.12. NumPy 1.26.4 has no Python 3.13 wheel,
+# and TensorFlow 2.17.1 is pinned for the saved model/runtime compatibility.
 fastapi==0.115.6
 uvicorn[standard]==0.34.0
 python-multipart==0.0.20

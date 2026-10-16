@@ -36,14 +36,24 @@ Restart the backend after changing dataset folders, `.env`, or backend code.
 
 ## Backend Setup
 
+Use Python **3.11 or 3.12** for the pinned NumPy/TensorFlow/PyTorch stack. Python 3.13
+cannot install the pinned NumPy 1.26.4 wheel and may leave TensorFlow partially installed.
+In PowerShell, use the Python launcher to build a clean environment (replace `3.11` with
+`3.12` if that is the installed version):
+
 ```bash
 cd backend_Venation
-python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
+py -3.11 -m venv .venv311
+.venv311\Scripts\activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
 copy .env.example .env
 python run.py --reload
 ```
+
+Check installed runtimes with `py -0p`. If neither Python 3.11 nor 3.12 is listed,
+install one of those versions before creating the environment. Do not reuse the
+incomplete Python 3.13 environment shown in the pip error.
 
 Open:
 
@@ -98,7 +108,7 @@ hybridnet_best.pth
 resnet50_best_weights.weights.h5
 ```
 
-If a model cannot be loaded, the backend may use deterministic fallback inference. For OneDrive folders, make sure model files are stored locally with "Always keep on this device".
+HybridNet-MSVD is the default trained model. If the selected model cannot be loaded, the backend returns an explicit error instead of a fabricated prediction. The `.weights.h5` files require their matching Keras architectures, which are not included yet. For OneDrive folders, make sure model files are stored locally with "Always keep on this device".
 
 ## Common Workflow
 
@@ -114,7 +124,7 @@ If a model cannot be loaded, the backend may use deterministic fallback inferenc
 - Dataset image is blank: restart the backend and check that `/dataset` returns real `image` URLs.
 - Download does not start: verify the backend is online and `/download-dataset-image/...` returns a JPG or PNG.
 - "Selected dataset file is not a supported JPG or PNG image": the app likely fetched an HTML error page instead of an image. Check `VITE_API_URL`, backend status, and dataset URLs.
-- Non-HybridNet model uses fallback: verify TensorFlow/PyTorch dependencies and that the matching model architecture/checkpoint can be loaded.
+- Model unavailable: check `GET /health` for the selected model's load status. The TensorFlow `.weights.h5` files need their exact model architectures before they can run inference.
 - PowerShell blocks npm: run `npm.cmd run dev` or `npm.cmd run build`.
 
 ## Build Checks

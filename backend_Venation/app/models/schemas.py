@@ -8,21 +8,25 @@ class ProcessedImages(BaseModel):
 
 
 class SinglePredictionResponse(BaseModel):
-    predicted_class: str
-    confidence_score: float = Field(ge=0, le=1)
-    processed_images: ProcessedImages
-    medicinal_uses: list[str]
-    description: str
-    scientific_name: str
-    common_name: str
-    name: str
-    scientificName: str
-    confidence: float
-    uses: list[str]
-    model_name: str
-    model_label: str
-    model_backend: str
-    model_file: str
+    success: bool = True
+    valid_leaf: bool = True
+    leaf_probability: float | None = Field(default=None, ge=0, le=1)
+    message: str | None = None
+    predicted_class: str | None = None
+    confidence_score: float | None = Field(default=None, ge=0, le=1)
+    processed_images: ProcessedImages | None = None
+    medicinal_uses: list[str] = Field(default_factory=list)
+    description: str | None = None
+    scientific_name: str | None = None
+    common_name: str | None = None
+    name: str | None = None
+    scientificName: str | None = None
+    confidence: float | None = None
+    uses: list[str] = Field(default_factory=list)
+    model_name: str | None = None
+    model_label: str | None = None
+    model_backend: str | None = None
+    model_file: str | None = None
     model_load_error: str | None = None
 
 

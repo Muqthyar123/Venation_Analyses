@@ -104,6 +104,7 @@ function Single() {
       return;
     }
     setLoading(true);
+    setResult(null);
     try {
       const r = await predictSingle(file, modelName);
       setResult(r);
@@ -111,7 +112,7 @@ function Single() {
         description: `${r.name} (${(r.confidence * 100).toFixed(1)}% confidence)`,
       });
       if (r.modelLoadError) {
-        toast.warning("Model file used fallback inference", {
+        toast.warning("The trained model reported a load issue", {
           description: r.modelLoadError,
         });
       }

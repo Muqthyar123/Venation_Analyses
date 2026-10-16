@@ -24,6 +24,8 @@
 
 # Dependencies & Python Cache
 node_modules/
+.venv/
+.venv311/
 __pycache__/
 *.pyc
 

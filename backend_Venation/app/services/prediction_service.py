@@ -6,7 +6,8 @@ from fastapi import HTTPException, UploadFile, status
 from app.config.settings import get_settings
 from app.preprocessing.pipeline import preprocess_image
 from app.services.metadata_service import find_plant, plant_response, static_url
-from app.services.model_service import model_service
+from app.services.leaf_validation import get_leaf_validator
+from app.services.model_service import ModelUnavailableError, model_service
 from app.utils.errors import validate_upload, validate_upload_size
 
 
@@ -22,6 +23,14 @@ async def read_upload(file: UploadFile) -> bytes:
 def predict_image_bytes(data: bytes, model_name: str | None = None) -> dict:
     settings = get_settings()
     try:
+        valid_leaf, leaf_probability = get_leaf_validator().validate(data)
+        if not valid_leaf:
+            return {
+                "success": False,
+                "valid_leaf": False,
+                "message": "This is not a valid leaf image. Please upload a leaf image.",
+                "leaf_probability": leaf_probability,
+            }
         processed = preprocess_image(data, settings.static_dir / "processed", settings.input_size)
         predicted_class, confidence, model_meta = model_service.predict(
             processed["multi_modal_tensor"],
@@ -29,6 +38,8 @@ def predict_image_bytes(data: bytes, model_name: str | None = None) -> dict:
         )
     except ValueError as exc:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+    except ModelUnavailableError as exc:
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(exc)) from exc
     except Exception as exc:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Prediction failed.") from exc
 
@@ -45,6 +56,9 @@ def predict_image_bytes(data: bytes, model_name: str | None = None) -> dict:
     processed_urls = {key: static_url(Path(value)) for key, value in processed["paths"].items()}
 
     return {
+        "success": True,
+        "valid_leaf": True,
+        "leaf_probability": leaf_probability,
         "predicted_class": predicted_class,
         "confidence_score": confidence,
         "processed_images": processed_urls,

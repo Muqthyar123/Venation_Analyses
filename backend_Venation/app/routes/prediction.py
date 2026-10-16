@@ -37,8 +37,18 @@ async def predict_multiple(
     for index, image in enumerate(images, start=1):
         validate_upload(image)
         data = await read_upload(image)
-        background_tasks.add_task(save_upload_copy, image.filename, data)
         result = predict_image_bytes(data, model_name)
+        if not result.get("valid_leaf", True):
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail={
+                    "success": False,
+                    "valid_leaf": False,
+                    "message": result["message"],
+                    "leaf_probability": result["leaf_probability"],
+                },
+            )
+        background_tasks.add_task(save_upload_copy, image.filename, data)
         row = {
             "filename": image.filename,
             "predicted_class": result["predicted_class"],

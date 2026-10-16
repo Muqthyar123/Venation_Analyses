@@ -1,4 +1,4 @@
-import { mockBatchPrediction, mockSinglePrediction, plantSamples } from "./mock-data";
+import { plantSamples } from "./mock-data";
 
 export const BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
 const REQUEST_TIMEOUT_MS = Number(import.meta.env.VITE_API_TIMEOUT_MS ?? 60000);
@@ -142,7 +142,9 @@ async function fetchWithTimeout(url: string, init?: RequestInit) {
 async function readError(res: Response) {
   try {
     const data = await res.json();
-    return data.detail ?? data.message ?? JSON.stringify(data);
+    const detail = data.detail ?? data.message ?? data;
+    if (typeof detail === "string") return detail;
+    return detail.message ?? JSON.stringify(detail);
   } catch {
     return await res.text();
   }
@@ -164,8 +166,18 @@ export async function predictSingle(file: File, modelName: ModelName = "hybridne
     if (!res.ok) throw new ApiError(await readError(res), res.status);
     const data = await res.json();
 
+    if (data.valid_leaf === false) {
+      throw new ApiError(
+        data.message ?? "This is not a valid leaf image. Please upload a leaf image.",
+        422,
+      );
+    }
+
     return {
       ...data,
+      success: true,
+      valid_leaf: true,
+      leaf_probability: data.leaf_probability,
       name: data.name ?? data.common_name ?? data.predicted_class,
       scientificName: data.scientificName ?? data.scientific_name ?? data.predicted_class,
       confidence: data.confidence ?? data.confidence_score,
@@ -179,12 +191,11 @@ export async function predictSingle(file: File, modelName: ModelName = "hybridne
       modelName: data.model_name,
       modelLabel: data.model_label,
       modelBackend: data.model_backend,
-      modelLoadError: data.model_backend === "fallback" ? null : data.model_load_error,
+      modelLoadError: data.model_load_error,
     } satisfies PredictionResult;
   } catch (error) {
     if (error instanceof ApiError) throw error;
-    console.warn("Backend prediction unavailable, using mock result.", error);
-    return mockSinglePrediction(file);
+    throw new ApiError("Prediction failed because the backend did not return a trained-model result.");
   }
 }
 
@@ -225,19 +236,7 @@ export async function predictMultiple(
     };
   } catch (error) {
     if (error instanceof ApiError) throw error;
-    console.warn("Backend batch prediction unavailable, using mock results.", error);
-    for (let i = 20; i <= 100; i += 20) {
-      await new Promise((r) => setTimeout(r, 120));
-      onProgress?.(i);
-    }
-    return {
-      results: mockBatchPrediction(files),
-      csvUrl: "",
-      jobId: "mock",
-      modelName,
-      modelLabel: MODEL_OPTIONS.find((m) => m.value === modelName)?.label ?? modelName,
-      modelBackend: "mock",
-    };
+    throw new ApiError("Batch prediction failed because the backend did not return trained-model results.");
   }
 }
 
